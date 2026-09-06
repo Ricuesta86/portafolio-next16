@@ -11,8 +11,8 @@ export default async function BlogPostPage({
 
   let Post: () => React.ReactNode
   try {
-    const module = await import(`@/content/${slug}.mdx`)
-    Post = module.default
+    const loadedModule = await import(`@/content/${slug}.mdx`)
+    Post = loadedModule.default
   } catch {
     notFound()
   }

@@ -1,7 +1,6 @@
-// components/AnimatedCounter.tsx
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, useInView, useAnimation } from 'framer-motion';
 
 interface AnimatedCounterProps {
@@ -11,11 +10,11 @@ interface AnimatedCounterProps {
   duration?: number;
 }
 
-const AnimatedCounter = ({ 
-  target, 
-  suffix = '', 
-  prefix = '', 
-  duration = 2 
+const AnimatedCounter = ({
+  target,
+  suffix = '',
+  prefix = '',
+  duration = 2,
 }: AnimatedCounterProps) => {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
@@ -48,20 +47,19 @@ const AnimatedCounter = ({
       animate={controls}
       variants={{
         hidden: { opacity: 0, scale: 0.5 },
-        visible: { 
-          opacity: 1, 
+        visible: {
+          opacity: 1,
           scale: 1,
-          transition: { duration: 0.5 }
-        }
+          transition: { duration: 0.5 },
+        },
       }}
-      className="text-5xl md:text-6xl font-bold text-indigo-600 dark:text-indigo-400"
+      className="text-5xl font-bold text-brand-600 dark:text-brand-400 md:text-6xl"
     >
-      {prefix}{count}{suffix}
+      {prefix}
+      {count}
+      {suffix}
     </motion.span>
   );
 };
 
 export default AnimatedCounter;
-
-// Asegúrate de importar useState
-import { useState } from 'react';
