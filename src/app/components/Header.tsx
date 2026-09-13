@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
+import Image from 'next/image';
+
 
 const navLinks = [
   { href: '/', label: 'Inicio' },
@@ -47,11 +49,17 @@ const Header = () => {
           href="/"
           className="group flex items-center gap-2 text-lg font-bold tracking-tight"
         >
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 font-mono text-sm text-white shadow-lg shadow-brand-500/30">
+          {/* <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 font-mono text-sm text-white shadow-lg shadow-brand-500/30">
             R
-          </span>
-          <span className="hidden sm:inline">ricuesta</span>
-          <span className="text-brand-600 dark:text-brand-400">.dev</span>
+          </span>*/}
+          <Image
+            src="/imagen/logo4.png"
+            alt="ricuesta dev"
+            width={50}
+            height={50}
+            className="" />
+          <span className="hidden sm:inline">Ricuesta</span>
+          <span className="text-brand-600 dark:text-brand-400">.dev</span> 
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">
