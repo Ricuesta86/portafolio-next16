@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Mail, Heart } from 'lucide-react';
 import { GithubIcon, LinkedinIcon, TwitterIcon } from './SocialIcons';
 import { socialLinks } from '@/data/social';
+import Image from 'next/image';
 
 const iconMap: Record<string, React.ReactNode> = {
   github: <GithubIcon className="h-5 w-5" />,
@@ -29,11 +30,14 @@ const Footer = () => {
         <div className="flex flex-col items-center gap-8 md:flex-row md:justify-between">
           <div className="text-center md:text-left">
             <Link href="/" className="group flex items-center justify-center gap-2 md:justify-start">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 font-mono text-sm text-white shadow-lg shadow-brand-500/30">
-                R
-              </span>
+          <Image
+            src="/imagen/logo4.png"
+            alt="ricuesta dev"
+            width={50}
+            height={50}
+            className="" />
               <span className="text-lg font-bold">
-                ricuesta<span className="text-brand-600 dark:text-brand-400">.dev</span>
+                Ricuesta <span className="text-brand-600 dark:text-brand-400">.dev</span>
               </span>
             </Link>
             <p className="mt-3 max-w-sm text-sm text-slate-500 dark:text-slate-400">

@@ -4,6 +4,7 @@ import ContactForm from '../components/ContactForm';
 import ScrollReveal from '../components/ScrollReveal';
 import { GithubIcon, LinkedinIcon, TwitterIcon } from '../components/SocialIcons';
 import { socialLinks } from '@/data/social';
+import AnimatedSpan from '../components/AnimatedSpan';
 
 export const metadata: Metadata = {
   title: 'Contacto',
@@ -51,9 +52,7 @@ export default function ContactPage() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <ScrollReveal>
           <div className="mb-16 text-center">
-            <span className="mb-4 inline-block rounded-full bg-brand-100 px-4 py-1.5 text-sm font-semibold text-brand-700 dark:bg-brand-900/50 dark:text-brand-300">
-              Contacto
-            </span>
+          <AnimatedSpan>Contacto</AnimatedSpan>
             <h1 className="mt-4 text-4xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
               Hablemos de tu{' '}
               <span className="bg-gradient-to-r from-brand-600 to-brand-400 bg-clip-text text-transparent">
