@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { ArrowRight, Calendar } from 'lucide-react';
-import Link from 'next/link';
-import TypewriterText from './TypewriterText';
+import { motion } from "framer-motion";
+import { ArrowRight, Calendar } from "lucide-react";
+import Link from "next/link";
+import TypewriterText from "./TypewriterText";
+import Image from "next/image";
 
 const Hero = () => {
   return (
@@ -19,21 +20,44 @@ const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-6 inline-block rounded-full border border-brand-200 bg-brand-50 px-4 py-2 text-sm font-medium text-brand-700 dark:border-brand-800 dark:bg-brand-950/50 dark:text-brand-300"
         >
-          Disponible para nuevos proyectos
+          <span className="mb-6 inline-block rounded-full border border-brand-200 bg-brand-50 px-4 py-2 text-sm font-medium text-brand-700 dark:border-brand-800 dark:bg-brand-900/50 dark:text-brand-300">
+            Disponible para nuevos proyectos
+          </span>
         </motion.div>
 
-        <h1 className="mb-6 text-4xl font-bold leading-tight tracking-tight sm:text-5xl md:text-7xl">
-          <TypewriterText
-            text="Tu idea en producción en 6 semanas."
-            speed={45}
-            className="text-slate-900 dark:text-white"
-          />
-          <span className="mt-2 block bg-gradient-to-r from-brand-600 to-brand-400 bg-clip-text text-transparent dark:from-brand-400 dark:to-brand-300">
-            Sin sorpresas. Sin deuda técnica.
-          </span>
-        </h1>
+        <div className="flex">
+          <h1 className="mb-6 text-4xl font-bold leading-tight tracking-tight sm:text-5xl md:text-7xl">
+            <TypewriterText
+              text="  Tu idea en producción en 6 semanas."
+              speed={45}
+              className="text-slate-900 dark:text-white"
+            />
+            <motion.span
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mt-2 block bg-gradient-to-r from-brand-600 to-brand-400 bg-clip-text text-transparent dark:from-brand-400 dark:to-brand-300"
+            >
+              Sin sorpresas. Sin deuda técnica.
+            </motion.span>
+          </h1>
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="relative inline-block"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-md opacity-75"></div>
+            <Image
+              src={"/imagen/imagen1.jpeg"}
+              width={350}
+              height={350}
+              alt="Photo the portfolio"
+              className="relative w-100 h-100 rounded-full object-cover border-4 border-white"
+            />
+          </motion.div>
+        </div>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
