@@ -50,7 +50,14 @@ export default function ContactPage() {
   return (
     <div className="pt-24 pb-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <section className="relative h-screen bg-[url('/hero.jpg')] bg-cover bg-center bg-no-repeat">
+          <div className="flex flex-col items-center justify-center h-full text-white text-center px-4">
+            <h1 className="text-4xl md:text-6xl font-bold">Tu Nombre</h1>
+            <p className="mt-4 text-lg md:text-xl">Desarrollador Web</p>
+          </div>
+        </section>
         <ScrollReveal>
+
           <div className="mb-16 text-center">
           <AnimatedSpan>Contacto</AnimatedSpan>
             <h1 className="mt-4 text-4xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
