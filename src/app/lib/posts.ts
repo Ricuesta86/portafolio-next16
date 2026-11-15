@@ -54,13 +54,19 @@ export function getPostTitle(slug: string): string | undefined {
   return parseFrontmatter(raw).title
 }
 
+export function getPostMeta(slug: string): PostMeta | undefined {
+  return getPostsMeta().find((post) => post.slug === slug)
+}
+
 export function formatDate(date?: string): string {
   if (!date) return ''
-  const parsed = new Date(date)
+  const dateOnly = /^\d{4}-\d{2}-\d{2}$/.test(date)
+  const parsed = new Date(dateOnly ? `${date}T00:00:00Z` : date)
   if (Number.isNaN(parsed.getTime())) return date
   return new Intl.DateTimeFormat('es-ES', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
+    ...(dateOnly ? { timeZone: 'UTC' } : {}),
   }).format(parsed)
 }

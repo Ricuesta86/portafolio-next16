@@ -1,54 +1,34 @@
-'use client';
-
-import { motion } from 'framer-motion';
-import AnimatedCounter from './AnimatedCounter';
 import { statistics } from '../lib/statistics';
-import ScrollReveal from './ScrollReveal';
+import Container from './Container';
 
 const Statistics = () => {
   return (
-    <section className="px-4 py-16 dark:bg-slate-900">
-      <div className="mx-auto max-w-6xl">
-        <ScrollReveal>
-          <div className="mb-12 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white md:text-4xl">
-              Impacto en números
-            </h2>
-            <p className="mt-2 text-slate-600 dark:text-slate-400">
-              Resultados que hablan por sí mismos
-            </p>
-          </div>
-        </ScrollReveal>
-
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+    <section className="border-b border-rule bg-surface">
+      <Container>
+        <h2 className="sr-only">Impacto en números</h2>
+        <dl className="grid md:grid-cols-3">
           {statistics.map((stat, index) => (
-            <motion.div
+            <div
               key={stat.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.15 }}
-              viewport={{ once: true }}
-              className="rounded-xl bg-slate-50 p-6 text-center transition-shadow hover:shadow-lg dark:bg-slate-800/50"
+              className={`py-8 md:px-8 md:py-10 ${
+                index > 0 ? 'border-t border-rule md:border-l md:border-t-0' : ''
+              } ${index === 0 ? 'md:pl-0' : ''}`}
             >
-              <div className="mb-3">
-                <AnimatedCounter
-                  target={stat.value}
-                  suffix={stat.suffix || ''}
-                  prefix={stat.prefix || ''}
-                />
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                {stat.label}
-              </h3>
+              <dt className="label">{stat.label}</dt>
+              <dd className="mt-3 font-display text-5xl leading-none tracking-tight text-ink">
+                {stat.prefix}
+                {stat.value}
+                {stat.suffix}
+              </dd>
               {stat.description && (
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                <p className="mt-3 max-w-xs text-small text-muted">
                   {stat.description}
                 </p>
               )}
-            </motion.div>
+            </div>
           ))}
-        </div>
-      </div>
+        </dl>
+      </Container>
     </section>
   );
 };

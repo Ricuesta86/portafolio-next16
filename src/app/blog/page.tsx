@@ -1,69 +1,89 @@
-import type { Metadata } from 'next'
-import Link from 'next/link'
-import { ArrowRight, Calendar, FileText } from 'lucide-react'
-import { getPostsMeta, formatDate } from '../lib/posts'
-import AnimatedSpan from '../components/AnimatedSpan'
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { getPostsMeta, formatDate } from '../lib/posts';
+import Container from '../components/Container';
+import ArrowLink from '../components/ArrowLink';
 
 export const metadata: Metadata = {
   title: 'Blog',
   description:
-    'Artículos y tutoriales sobre desarrollo de software, React, TypeScript y arquitectura.',
-}
+    'Notas de ingeniería de Ricuesta sobre React, TypeScript, arquitectura de software y decisiones técnicas.',
+};
 
 export default function BlogPage() {
-  const posts = getPostsMeta()
+  const posts = getPostsMeta();
 
   return (
-    <div className="pt-24 pb-20">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <header className="mb-12 text-center">
-          <AnimatedSpan>Blog</AnimatedSpan>
-          <h1 className="mt-4 text-4xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
-            Artículos y{' '}
-            <span className="bg-gradient-to-r from-brand-600 to-brand-400 bg-clip-text text-transparent">
-              tutoriales
+    <>
+      <section className="section border-b border-rule">
+        <Container>
+          <p className="label">Blog</p>
+          <h1 className="mt-5 max-w-4xl font-display text-display text-ink">
+            Notas de ingeniería.
+            <span className="block text-muted">
+              Decisiones, no tutoriales de moda.
             </span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-600 dark:text-slate-400">
-            Ideas, lecciones y experiencias sobre desarrollo de software.
+          <p className="mt-7 max-w-2xl text-body text-muted">
+            Escribo sobre lo que cambia cuando un producto crece: arquitectura,
+            tipos, límites entre sistemas y el coste de las decisiones que
+            parecían pequeñas.
           </p>
-        </header>
+        </Container>
+      </section>
 
-        {posts.length === 0 ? (
-          <p className="text-center text-slate-500 dark:text-slate-400">
-            Aún no hay publicaciones.
-          </p>
-        ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => (
-              <Link
-                key={post.slug}
-                href={`/blog/${post.slug}`}
-                className="group"
-              >
-                <article className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:hover:border-brand-700">
-                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-brand-100 text-brand-600 transition-colors group-hover:bg-brand-600 group-hover:text-white dark:bg-brand-900/50 dark:text-brand-400">
-                    <FileText className="h-5 w-5" />
-                  </div>
-                  <h2 className="mb-2 text-lg font-bold text-slate-900 transition-colors group-hover:text-brand-600 dark:text-white dark:group-hover:text-brand-400">
-                    {post.title}
-                  </h2>
-                  {post.date && (
-                    <p className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
-                      <Calendar className="h-4 w-4" />
-                      {formatDate(post.date)}
-                    </p>
-                  )}
-                  <span className="mt-auto inline-flex items-center gap-1.5 pt-4 text-sm font-semibold text-brand-600 dark:text-brand-400">
-                    Leer artículo
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </span>
-                </article>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  )
+      <section className="section">
+        <Container>
+          {posts.length === 0 ? (
+            <div className="border-t border-rule py-16">
+              <p className="font-display text-h3 text-ink">
+                Todavía no hay publicaciones.
+              </p>
+              <p className="mt-3 max-w-lg text-small text-muted">
+                Estoy preparando las primeras notas. Mientras tanto, puedes ver
+                el trabajo que hay detrás de este portafolio.
+              </p>
+              <ArrowLink href="/projects" className="mt-6">
+                Ver proyectos
+              </ArrowLink>
+            </div>
+          ) : (
+            <ol>
+              {posts.map((post, index) => (
+                <li key={post.slug} className="border-t border-rule">
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="group grid min-h-24 gap-3 py-7 md:grid-cols-12 md:items-baseline md:gap-6"
+                  >
+                    <span className="font-mono text-label tracking-[0.14em] text-muted md:col-span-1">
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+                    <div className="md:col-span-8">
+                      <h2 className="font-display text-h3 text-ink transition-colors duration-[var(--duration-fast)] group-hover:text-accent-strong">
+                        {post.title}
+                      </h2>
+                      {post.date && (
+                        <time
+                          dateTime={post.date}
+                          className="mt-2 block font-mono text-label uppercase tracking-[0.14em] text-muted"
+                        >
+                          {formatDate(post.date)}
+                        </time>
+                      )}
+                    </div>
+                    <span
+                      aria-hidden="true"
+                      className="text-lg text-accent-strong md:col-span-3 md:text-right"
+                    >
+                      →
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          )}
+        </Container>
+      </section>
+    </>
+  );
 }

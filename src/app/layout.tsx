@@ -1,13 +1,39 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import localFont from 'next/font/local';
 import { ThemeProvider } from './components/ThemeProvider';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import './globals.css';
 
-const inter = Inter({
-  subsets: ['latin'],
+const inter = localFont({
+  src: './fonts/inter-latin.woff2',
   variable: '--font-inter',
+  display: 'swap',
+  weight: '100 900',
+});
+
+const newsreader = localFont({
+  src: [
+    {
+      path: './fonts/newsreader-latin.woff2',
+      weight: '200 800',
+      style: 'normal',
+    },
+    {
+      path: './fonts/newsreader-latin-italic.woff2',
+      weight: '200 800',
+      style: 'italic',
+    },
+  ],
+  variable: '--font-newsreader',
+  display: 'swap',
+});
+
+const jetbrainsMono = localFont({
+  src: './fonts/jetbrains-mono-latin.woff2',
+  variable: '--font-jetbrains-mono',
+  display: 'swap',
+  weight: '400 800',
 });
 
 export const metadata: Metadata = {
@@ -42,16 +68,23 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body
+        className={`${inter.variable} ${newsreader.variable} ${jetbrainsMono.variable} font-sans`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+          <a href="#contenido" className="skip-link">
+            Saltar al contenido
+          </a>
+          <div className="flex min-h-screen flex-col bg-paper text-ink">
             <Header />
-            <main className="flex-1">{children}</main>
+            <main id="contenido" tabIndex={-1} className="flex-1">
+              {children}
+            </main>
             <Footer />
           </div>
         </ThemeProvider>

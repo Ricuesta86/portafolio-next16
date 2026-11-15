@@ -1,8 +1,4 @@
-'use client';
-
-import { motion } from 'framer-motion';
 import type { Skill } from '@/types';
-import ScrollReveal from './ScrollReveal';
 
 interface SkillsSectionProps {
   skills: Skill[];
@@ -11,17 +7,15 @@ interface SkillsSectionProps {
 const categoryLabels: Record<string, string> = {
   frontend: 'Frontend',
   backend: 'Backend',
-  database: 'Bases de Datos',
+  database: 'Bases de datos',
   tools: 'Herramientas',
-  soft: 'Habilidades Blandas',
+  soft: 'Trabajo y liderazgo',
 };
 
-const categoryColors: Record<string, string> = {
-  frontend: 'from-blue-500 to-cyan-500',
-  backend: 'from-emerald-500 to-teal-500',
-  database: 'from-orange-500 to-amber-500',
-  tools: 'from-purple-500 to-violet-500',
-  soft: 'from-rose-500 to-pink-500',
+const levelLabel = (level: number) => {
+  if (level >= 90) return 'Experto';
+  if (level >= 80) return 'Avanzado';
+  return 'Sólido';
 };
 
 const SkillsSection = ({ skills }: SkillsSectionProps) => {
@@ -34,40 +28,31 @@ const SkillsSection = ({ skills }: SkillsSectionProps) => {
   );
 
   return (
-    <div className="space-y-12">
-      {Object.entries(grouped).map(([category, categorySkills], groupIndex) => (
-        <ScrollReveal key={category} delay={groupIndex * 0.1}>
-          <h3 className="mb-6 text-lg font-semibold text-slate-900 dark:text-white">
+    <div className="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+      {Object.entries(grouped).map(([category, categorySkills]) => (
+        <section key={category} aria-labelledby={`skills-${category}`}>
+          <h3
+            id={`skills-${category}`}
+            className="border-t border-rule pt-4 font-mono text-label uppercase tracking-[0.14em] text-muted"
+          >
             {categoryLabels[category] ?? category}
           </h3>
-          <div className="space-y-4">
-            {categorySkills.map((skill, index) => (
-              <div key={skill.name}>
-                <div className="mb-1.5 flex items-center justify-between text-sm">
-                  <span className="font-medium text-slate-700 dark:text-slate-300">
-                    {skill.name}
-                  </span>
-                  <span className="text-slate-500 dark:text-slate-400">
-                    {skill.level}%
-                  </span>
-                </div>
-                <div className="h-2.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${skill.level}%` }}
-                    viewport={{ once: true }}
-                    transition={{
-                      duration: 1,
-                      delay: index * 0.05,
-                      ease: 'easeOut',
-                    }}
-                    className={`h-full rounded-full bg-gradient-to-r ${categoryColors[skill.category]}`}
-                  />
-                </div>
-              </div>
+          <ul className="mt-2">
+            {categorySkills.map((skill) => (
+              <li
+                key={skill.name}
+                className="flex items-baseline justify-between gap-4 border-b border-rule py-3"
+              >
+                <span className="text-small font-medium text-ink">
+                  {skill.name}
+                </span>
+                <span className="shrink-0 font-mono text-label uppercase tracking-[0.12em] text-muted">
+                  {levelLabel(skill.level)}
+                </span>
+              </li>
             ))}
-          </div>
-        </ScrollReveal>
+          </ul>
+        </section>
       ))}
     </div>
   );

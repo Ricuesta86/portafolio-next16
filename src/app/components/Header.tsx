@@ -1,13 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
-import Image from 'next/image';
-
 
 const navLinks = [
   { href: '/', label: 'Inicio' },
@@ -18,117 +16,151 @@ const navLinks = [
 ];
 
 const Header = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
+  const [menu, setMenu] = useState({ open: false, pathname });
+  const [isScrolled, setIsScrolled] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+  const isOpen = menu.open && menu.pathname === pathname;
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 10);
+    const handleScroll = () => setIsScrolled(window.scrollY > 8);
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleNavClick = () => setIsOpen(false);
+  const closeMenu = useCallback(
+    (returnFocus = false) => {
+      setMenu({ open: false, pathname });
+      if (returnFocus) {
+        menuButtonRef.current?.focus();
+      }
+    },
+    [pathname],
+  );
 
-  const isActive = (href: string) => pathname === href;
+  const toggleMenu = useCallback(() => {
+    setMenu({ open: !isOpen, pathname });
+  }, [isOpen, pathname]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeMenu(true);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, closeMenu]);
+
+  const isActive = (href: string) =>
+    pathname === href || (href !== '/' && pathname.startsWith(`${href}/`));
 
   return (
-    <motion.header
-      initial={{ y: -80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      className={`fixed inset-x-0 top-0 z-50 border-b transition-all duration-300 ${
-        isScrolled
-          ? 'border-slate-200/80 bg-white/80 backdrop-blur-lg dark:border-slate-800/80 dark:bg-slate-950/80'
-          : 'border-transparent bg-transparent'
+    <header
+      className={`sticky top-0 z-50 border-b transition-colors duration-[var(--duration-fast)] ${
+        isScrolled || isOpen
+          ? 'border-rule bg-paper/95 backdrop-blur-sm'
+          : 'border-transparent bg-paper'
       }`}
     >
-      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+      <div className="site-container flex h-[72px] items-center justify-between gap-4">
         <Link
           href="/"
-          className="group flex items-center gap-2 text-lg font-bold tracking-tight"
+          className="flex min-h-11 items-center gap-2.5"
+          aria-label="Ricuesta, inicio"
         >
-          {/* <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 font-mono text-sm text-white shadow-lg shadow-brand-500/30">
-            R
-          </span>*/}
           <Image
             src="/imagen/logo4.png"
-            alt="ricuesta dev"
-            width={50}
-            height={50}
-            className="" />
-          <span className="hidden sm:inline">Ricuesta</span>
-          <span className="text-brand-600 dark:text-brand-400">.dev</span> 
+            alt=""
+            width={36}
+            height={36}
+            className="h-9 w-9 object-contain grayscale dark:invert"
+          />
+          <span className="font-display text-xl leading-none tracking-tight">
+            Ricuesta
+            <span className="font-mono text-sm text-accent-strong">.dev</span>
+          </span>
         </Link>
 
-        <div className="hidden items-center gap-1 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`relative rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                isActive(link.href)
-                  ? 'text-brand-600 dark:text-brand-400'
-                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-              }`}
-            >
-              {isActive(link.href) && (
-                <motion.span
-                  layoutId="nav-active"
-                  className="absolute inset-0 rounded-lg bg-brand-100 dark:bg-brand-900/50"
-                  transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                />
-              )}
-              <span className="relative z-10">{link.label}</span>
-            </Link>
-          ))}
-          <div className="ml-2">
-            <ThemeToggle />
-          </div>
-        </div>
+        <nav
+          aria-label="Navegación principal"
+          className="hidden items-center gap-7 md:flex"
+        >
+          {navLinks.map((link) => {
+            const active = isActive(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={active ? 'page' : undefined}
+                className={`flex min-h-11 min-w-11 items-center justify-center border-b-2 pt-0.5 text-sm transition-colors duration-[var(--duration-fast)] ${
+                  active
+                    ? 'border-accent font-medium text-ink'
+                    : 'border-transparent text-muted hover:border-rule hover:text-ink'
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
 
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-2">
           <ThemeToggle />
           <button
-            onClick={() => setIsOpen((prev) => !prev)}
+            ref={menuButtonRef}
+            type="button"
+            aria-expanded={isOpen}
+            aria-controls="mobile-navigation"
             aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
-            className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-700 dark:border-slate-800 dark:text-slate-300"
+            onClick={toggleMenu}
+            className="flex h-11 w-11 items-center justify-center border border-rule text-ink transition-colors duration-[var(--duration-fast)] hover:border-ink md:hidden"
           >
-            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {isOpen ? (
+              <X className="h-5 w-5" aria-hidden="true" />
+            ) : (
+              <Menu className="h-5 w-5" aria-hidden="true" />
+            )}
           </button>
         </div>
-      </nav>
+      </div>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25 }}
-            className="overflow-hidden border-b border-slate-200 bg-white md:hidden dark:border-slate-800 dark:bg-slate-950"
+      <div
+        id="mobile-navigation"
+        className="menu-grid border-rule md:hidden"
+        data-open={isOpen}
+      >
+        <div>
+          <nav
+            aria-label="Navegación móvil"
+            inert={!isOpen}
+            className="site-container pb-4"
           >
-            <div className="flex flex-col gap-1 px-4 py-4">
-              {navLinks.map((link) => (
+            {navLinks.map((link) => {
+              const active = isActive(link.href);
+              return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  onClick={handleNavClick}
-                  className={`rounded-lg px-3 py-3 text-sm font-medium transition-colors ${
-                    isActive(link.href)
-                      ? 'bg-brand-100 text-brand-600 dark:bg-brand-900/50 dark:text-brand-400'
-                      : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-900'
+                  onClick={() => closeMenu()}
+                  aria-current={active ? 'page' : undefined}
+                  className={`flex min-h-11 items-center border-t border-rule text-sm transition-colors duration-[var(--duration-fast)] ${
+                    active ? 'font-medium text-accent-strong' : 'text-muted hover:text-ink'
                   }`}
                 >
                   {link.label}
                 </Link>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.header>
+              );
+            })}
+          </nav>
+        </div>
+      </div>
+    </header>
   );
 };
 

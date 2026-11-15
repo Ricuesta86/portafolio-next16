@@ -1,16 +1,15 @@
-'use client';
-
 import Link from 'next/link';
-import { Mail, Heart } from 'lucide-react';
+import Image from 'next/image';
+import { Mail } from 'lucide-react';
 import { GithubIcon, LinkedinIcon, TwitterIcon } from './SocialIcons';
 import { socialLinks } from '@/data/social';
-import Image from 'next/image';
+import Container from './Container';
 
 const iconMap: Record<string, React.ReactNode> = {
-  github: <GithubIcon className="h-5 w-5" />,
-  linkedin: <LinkedinIcon className="h-5 w-5" />,
-  twitter: <TwitterIcon className="h-5 w-5" />,
-  mail: <Mail className="h-5 w-5" />,
+  github: <GithubIcon className="h-4 w-4" />,
+  linkedin: <LinkedinIcon className="h-4 w-4" />,
+  twitter: <TwitterIcon className="h-4 w-4" />,
+  mail: <Mail className="h-4 w-4" aria-hidden="true" />,
 };
 
 const footerLinks = [
@@ -25,62 +24,87 @@ const Footer = () => {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-slate-200 bg-white/50 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/50">
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-        <div className="flex flex-col items-center gap-8 md:flex-row md:justify-between">
-          <div className="text-center md:text-left">
-            <Link href="/" className="group flex items-center justify-center gap-2 md:justify-start">
-          <Image
-            src="/imagen/logo4.png"
-            alt="ricuesta dev"
-            width={50}
-            height={50}
-            className="" />
-              <span className="text-lg font-bold">
-                Ricuesta <span className="text-brand-600 dark:text-brand-400">.dev</span>
+    <footer className="border-t border-rule bg-surface">
+      <Container className="py-14">
+        <div className="grid gap-10 md:grid-cols-12">
+          <div className="md:col-span-5">
+            <Link
+              href="/"
+              className="inline-flex min-h-11 items-center gap-2.5"
+              aria-label="Ricuesta, inicio"
+            >
+              <Image
+                src="/imagen/logo4.png"
+                alt=""
+                width={32}
+                height={32}
+                loading="eager"
+                className="h-8 w-8 object-contain grayscale dark:invert"
+              />
+              <span className="font-display text-lg leading-none tracking-tight">
+                Ricuesta
+                <span className="font-mono text-xs text-accent-strong">.dev</span>
               </span>
             </Link>
-            <p className="mt-3 max-w-sm text-sm text-slate-500 dark:text-slate-400">
-              Construyendo software que escala. De la idea al mercado, sin perder
-              tiempo ni dinero.
+            <p className="mt-4 max-w-sm text-small text-muted">
+              Ingeniería de software para productos que tienen que crecer. De la
+              primera decisión técnica al sistema en producción.
             </p>
           </div>
 
-          <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 md:justify-end">
-            {footerLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm text-slate-500 transition-colors hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-400"
-              >
-                {link.label}
-              </Link>
-            ))}
+          <nav
+            aria-label="Navegación del pie"
+            className="md:col-span-4"
+          >
+            <p className="label mb-4">Mapa del sitio</p>
+            <ul className="grid grid-cols-2 gap-x-6">
+              {footerLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="flex min-h-11 items-center text-small text-muted transition-colors duration-[var(--duration-fast)] hover:text-ink"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </nav>
-        </div>
 
-        <div className="mt-10 flex flex-col items-center gap-4 border-t border-slate-200 pt-8 dark:border-slate-800 sm:flex-row sm:justify-between">
-          <p className="flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400">
-            &copy; {year} ricuesta.dev &middot; Hecho con{' '}
-            <Heart className="h-4 w-4 fill-red-500 text-red-500" /> y Next.js
-          </p>
-
-          <div className="flex items-center gap-3">
-            {socialLinks.map((social) => (
-              <a
-                key={social.name}
-                href={social.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={social.name}
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-all hover:bg-brand-100 hover:text-brand-600 dark:text-slate-400 dark:hover:bg-brand-900/50 dark:hover:text-brand-400"
-              >
-                {iconMap[social.icon]}
-              </a>
-            ))}
+          <div className="md:col-span-3">
+            <p className="label mb-4">Enlaces</p>
+            <ul className="space-y-2">
+              {socialLinks.map((social) => {
+                const external = social.url.startsWith('http');
+                return (
+                  <li key={social.name}>
+                    <a
+                      href={social.url}
+                      target={external ? '_blank' : undefined}
+                      rel={external ? 'noopener noreferrer' : undefined}
+                      className="flex min-h-11 items-center gap-2 text-small text-muted transition-colors duration-[var(--duration-fast)] hover:text-ink"
+                    >
+                      <span className="text-ink" aria-hidden="true">
+                        {iconMap[social.icon]}
+                      </span>
+                      {social.name}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         </div>
-      </div>
+
+        <div className="mt-12 flex flex-col gap-3 border-t border-rule pt-6 text-small text-muted sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © {year} ricuesta.dev · Diseñado y construido con Next.js
+          </p>
+          <p className="font-mono text-label uppercase tracking-[0.14em]">
+            Remoto · Cualquier zona horaria
+          </p>
+        </div>
+      </Container>
     </footer>
   );
 };

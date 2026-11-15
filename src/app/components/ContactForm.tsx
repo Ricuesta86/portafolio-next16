@@ -1,11 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Send, CheckCircle, Loader2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle, Send } from 'lucide-react';
 
 const contactSchema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -17,10 +16,12 @@ const contactSchema = z.object({
 type FormSchema = z.infer<typeof contactSchema>;
 
 const inputBase =
-  'w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder-slate-500 dark:focus:border-brand-400';
+  'w-full border-0 border-b border-rule bg-transparent px-0 py-3 text-body text-ink placeholder:text-muted focus:border-accent focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
 
 const ContactForm = () => {
   const [submitted, setSubmitted] = useState(false);
+  const successRef = useRef<HTMLParagraphElement>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
     register,
@@ -31,138 +32,209 @@ const ContactForm = () => {
     resolver: zodResolver(contactSchema),
   });
 
-  const onSubmit = async () => {
-    // Simular envío
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (submitted) {
+      successRef.current?.focus();
+    }
+  }, [submitted]);
+
+  const onSubmit = useCallback(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 900));
     setSubmitted(true);
     reset();
-    setTimeout(() => setSubmitted(false), 5000);
-  };
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => setSubmitted(false), 5000);
+  }, [reset]);
+
+  const submitForm = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      void handleSubmit(onSubmit)(event);
+    },
+    [handleSubmit, onSubmit],
+  );
+
+  if (submitted) {
+    return (
+      <div
+        role="status"
+        className="border-t border-rule py-6"
+      >
+        <p
+          ref={successRef}
+          tabIndex={-1}
+          className="flex items-center gap-2 font-display text-h3 text-ink"
+        >
+          <CheckCircle
+            className="h-5 w-5 shrink-0 text-accent-strong"
+            aria-hidden="true"
+          />
+          Mensaje registrado.
+        </p>
+        <p className="mt-3 max-w-md text-small text-muted">
+          Gracias por escribir. Esta demo no envía datos a un servidor; si
+          necesitas contacto directo, escribe a{' '}
+          <a
+            href="mailto:hola@ricuesta.dev"
+            className="underline decoration-rule underline-offset-4 hover:text-accent-strong"
+          >
+            hola@ricuesta.dev
+          </a>
+          .
+        </p>
+        <button
+          type="button"
+          onClick={() => setSubmitted(false)}
+          className="mt-6 inline-flex min-h-11 items-center border-b-2 border-accent text-small font-medium text-ink"
+        >
+          Escribir otro mensaje
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="relative">
-      <AnimatePresence mode="wait">
-        {submitted ? (
-          <motion.div
-            key="success"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="rounded-2xl border border-emerald-200 bg-emerald-50 p-8 text-center dark:border-emerald-900/50 dark:bg-emerald-950/20"
+    <form onSubmit={submitForm} className="space-y-7" noValidate>
+      <div className="grid gap-7 sm:grid-cols-2">
+        <div>
+          <label
+            htmlFor="name"
+            className="mb-1 block font-mono text-label uppercase tracking-[0.14em] text-muted"
           >
-            <CheckCircle className="mx-auto mb-4 h-12 w-12 text-emerald-500" />
-            <h3 className="mb-2 text-xl font-bold text-emerald-800 dark:text-emerald-300">
-              ¡Mensaje enviado!
-            </h3>
-            <p className="text-emerald-600 dark:text-emerald-400">
-              Gracias por contactarme. Te responderé lo antes posible.
-            </p>
-          </motion.div>
-        ) : (
-          <motion.form
-            key="form"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onSubmit={handleSubmit(onSubmit)}
-            className="space-y-5"
-          >
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="name"
-                  className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300"
-                >
-                  Nombre
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  placeholder="Tu nombre"
-                  className={inputBase}
-                  {...register('name')}
-                />
-                {errors.name && (
-                  <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
-                )}
-              </div>
-              <div>
-                <label
-                  htmlFor="email"
-                  className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300"
-                >
-                  Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="tu@email.com"
-                  className={inputBase}
-                  {...register('email')}
-                />
-                {errors.email && (
-                  <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="subject"
-                className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300"
-              >
-                Asunto
-              </label>
-              <input
-                id="subject"
-                type="text"
-                placeholder="¿En qué puedo ayudarte?"
-                className={inputBase}
-                {...register('subject')}
-              />
-              {errors.subject && (
-                <p className="mt-1 text-xs text-red-500">{errors.subject.message}</p>
-              )}
-            </div>
-
-            <div>
-              <label
-                htmlFor="message"
-                className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300"
-              >
-                Mensaje
-              </label>
-              <textarea
-                id="message"
-                rows={5}
-                placeholder="Cuéntame sobre tu proyecto..."
-                className={`${inputBase} resize-none`}
-                {...register('message')}
-              />
-              {errors.message && (
-                <p className="mt-1 text-xs text-red-500">{errors.message.message}</p>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-600/25 transition-all hover:bg-brand-700 hover:shadow-brand-600/40 hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:scale-100 sm:w-auto"
+            Nombre
+          </label>
+          <input
+            id="name"
+            type="text"
+            autoComplete="name"
+            placeholder="Tu nombre"
+            className={inputBase}
+            aria-invalid={errors.name ? 'true' : 'false'}
+            aria-describedby={errors.name ? 'name-error' : undefined}
+            {...register('name')}
+          />
+          {errors.name && (
+            <p
+              id="name-error"
+              role="alert"
+              className="mt-2 text-small text-red-700 dark:text-red-400"
             >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" /> Enviando...
-                </>
-              ) : (
-                <>
-                  <Send className="h-4 w-4" /> Enviar mensaje
-                </>
-              )}
-            </button>
-          </motion.form>
+              {errors.name.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label
+            htmlFor="email"
+            className="mb-1 block font-mono text-label uppercase tracking-[0.14em] text-muted"
+          >
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            autoComplete="email"
+            placeholder="tu@email.com"
+            className={inputBase}
+            aria-invalid={errors.email ? 'true' : 'false'}
+            aria-describedby={errors.email ? 'email-error' : undefined}
+            {...register('email')}
+          />
+          {errors.email && (
+            <p
+              id="email-error"
+              role="alert"
+              className="mt-2 text-small text-red-700 dark:text-red-400"
+            >
+              {errors.email.message}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <label
+          htmlFor="subject"
+          className="mb-1 block font-mono text-label uppercase tracking-[0.14em] text-muted"
+        >
+          Asunto
+        </label>
+        <input
+          id="subject"
+          type="text"
+          placeholder="¿En qué puedo ayudarte?"
+          className={inputBase}
+          aria-invalid={errors.subject ? 'true' : 'false'}
+          aria-describedby={errors.subject ? 'subject-error' : undefined}
+          {...register('subject')}
+        />
+        {errors.subject && (
+          <p
+            id="subject-error"
+            role="alert"
+            className="mt-2 text-small text-red-700 dark:text-red-400"
+          >
+            {errors.subject.message}
+          </p>
         )}
-      </AnimatePresence>
-    </div>
+      </div>
+
+      <div>
+        <label
+          htmlFor="message"
+          className="mb-1 block font-mono text-label uppercase tracking-[0.14em] text-muted"
+        >
+          Mensaje
+        </label>
+        <textarea
+          id="message"
+          rows={5}
+          placeholder="Cuéntame sobre el proyecto, el equipo y la decisión pendiente."
+          className={`${inputBase} resize-y`}
+          aria-invalid={errors.message ? 'true' : 'false'}
+          aria-describedby={errors.message ? 'message-error' : undefined}
+          {...register('message')}
+        />
+        {errors.message && (
+          <p
+            id="message-error"
+            role="alert"
+            className="mt-2 text-small text-red-700 dark:text-red-400"
+          >
+            {errors.message.message}
+          </p>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="inline-flex min-h-[44px] items-center justify-center gap-2 bg-accent px-5 py-3 text-sm font-medium text-accent-contrast transition-colors duration-[var(--duration-fast)] hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {isSubmitting ? (
+          'Enviando…'
+        ) : (
+          <>
+            <Send className="h-4 w-4" aria-hidden="true" />
+            Enviar mensaje
+          </>
+        )}
+      </button>
+
+      <p className="text-small text-muted">
+        Este formulario es una demostración. No se envían datos a un servidor.
+      </p>
+    </form>
   );
 };
 

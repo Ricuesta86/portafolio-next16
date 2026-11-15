@@ -1,21 +1,18 @@
 ---
-title: Mi post con animaciones
+title: Animaciones que no estorban
 date: 2026-08-30
 ---
 
-import { FadeIn } from '@/app/components/FadeIn'
-import { StaggeredList, StaggeredItem } from '@/app/components/StaggeredList'
+Una entrada puede ayudar a leer la página. Un bucle decorativo, no. Este contenido está disponible desde el primer render, sin animaciones de entrada que retrasen la lectura.
 
-# Mi artículo animado
+## Qué dejar quieto
 
-<FadeIn>
-Este contenido aparece con una animación suave de entrada.
-</FadeIn>
+- El texto que la persona está leyendo.
+- Las tablas, cifras y estados que cambian con frecuencia.
+- Cualquier animación que se repita mientras la página está abierta.
 
-## Lista con animación escalonada
+## Qué merece movimiento
 
-<StaggeredList>
-  <StaggeredItem>Primer elemento</StaggeredItem>
-  <StaggeredItem>Segundo elemento</StaggeredItem>
-  <StaggeredItem>Tercer elemento</StaggeredItem>
-</StaggeredList>
+- Una transición breve al abrir un menú o un panel.
+- La respuesta inmediata a un gesto.
+- Una entrada única que ordene la jerarquía, nunca que la retrase.

@@ -1,43 +1,65 @@
-'use client';
-
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import ProjectCard from './ProjectCard';
-import ScrollReveal from './ScrollReveal';
 import { projects } from '@/data/projects';
+import Container from './Container';
+import SectionHeading from './SectionHeading';
+import ArrowLink from './ArrowLink';
 
 const ProjectsPreview = () => {
-  const featuredProjects = projects.filter((p) => p.featured).slice(0, 3);
+  const featuredProjects = projects.filter((project) => project.featured).slice(0, 3);
 
   return (
-    <section className="py-20 px-4 sm:px-6">
-      <div className="max-w-6xl mx-auto">
-        <ScrollReveal>
-          <div className="flex flex-col items-center justify-between gap-4 mb-12 sm:flex-row">
-            <div>
-              <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white md:text-4xl">
-                Proyectos destacados
-              </h2>
-              <p className="mt-2 text-slate-600 dark:text-slate-400">
-                Una selección de mi mejor trabajo reciente
-              </p>
-            </div>
-            <Link
-              href="/projects"
-              className="group inline-flex items-center gap-1.5 font-semibold text-brand-600 transition-colors hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300"
-            >
-              Ver todos{' '}
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </div>
-        </ScrollReveal>
-
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {featuredProjects.map((project, index) => (
-            <ProjectCard key={project.id} project={project} index={index} />
-          ))}
+    <section className="section border-b border-rule">
+      <Container>
+        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+          <SectionHeading
+            eyebrow="Trabajo"
+            title="Proyectos destacados"
+            lead="Una selección de productos donde la arquitectura, la entrega y el negocio tuvieron que alinearse."
+          />
+          <ArrowLink href="/projects" className="shrink-0">
+            Ver todos
+          </ArrowLink>
         </div>
-      </div>
+
+        <ol className="mt-14">
+          {featuredProjects.map((project, index) => (
+            <li key={project.id} className="border-t border-rule">
+              <div className="grid gap-4 py-7 md:grid-cols-12 md:items-baseline md:gap-6">
+                <p className="font-mono text-label tracking-[0.14em] text-muted md:col-span-1">
+                  {String(index + 1).padStart(2, '0')}
+                </p>
+
+                <div className="md:col-span-5">
+                  <h3 className="text-h3 font-semibold text-ink">
+                    <Link
+                      href="/projects"
+                      className="inline-flex min-h-11 items-center transition-colors duration-[var(--duration-fast)] hover:text-accent-strong"
+                    >
+                      {project.title}
+                    </Link>
+                  </h3>
+                  <p className="mt-2 max-w-xl text-small text-muted">
+                    {project.description}
+                  </p>
+                </div>
+
+                <p className="font-mono text-label uppercase leading-[1.5] tracking-[0.12em] text-muted md:col-span-4">
+                  {project.technologies.join(' · ')}
+                </p>
+
+                <div className="md:col-span-2 md:text-right">
+                  <span
+                    aria-hidden="true"
+                    className="text-lg text-accent-strong"
+                  >
+                    ↗
+                  </span>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </Container>
     </section>
   );
 };

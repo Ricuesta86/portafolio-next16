@@ -7,7 +7,10 @@ const nextConfig = {
 
 const withMDX = createMDX({
   options: {
-    // remarkPlugins: [remarkGfm],
+    // Ruta absoluta serializable: Turbopack no admite funciones en la configuración.
+    remarkPlugins: [
+      new URL('./remark-strip-frontmatter.mjs', import.meta.url).pathname,
+    ],
     // rehypePlugins: [],
   },
 })

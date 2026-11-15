@@ -3,7 +3,6 @@
 import { useTheme } from 'next-themes';
 import { useSyncExternalStore } from 'react';
 import { Moon, Sun } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 const emptySubscribe = () => () => {};
 
@@ -16,27 +15,26 @@ const ThemeToggle = () => {
   );
 
   if (!mounted) {
-    return <div className="h-10 w-10 rounded-lg border border-slate-200 dark:border-slate-800" />;
+    return <div className="h-11 w-11" aria-hidden="true" />;
   }
 
   const isDark = resolvedTheme === 'dark';
+  const label = isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro';
 
   return (
-    <motion.button
-      whileTap={{ scale: 0.9 }}
+    <button
+      type="button"
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      aria-label={isDark ? 'Activar modo claro' : 'Activar modo oscuro'}
-      className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-800 dark:text-slate-200 dark:hover:bg-slate-900"
+      aria-label={label}
+      title={label}
+      className="flex h-11 w-11 items-center justify-center border border-rule text-ink transition-colors duration-[var(--duration-fast)] hover:border-ink hover:bg-surface"
     >
-      <motion.div
-        key={isDark ? 'moon' : 'sun'}
-        initial={{ rotate: -90, opacity: 0, scale: 0.6 }}
-        animate={{ rotate: 0, opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        {isDark ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-      </motion.div>
-    </motion.button>
+      {isDark ? (
+        <Moon className="h-5 w-5" aria-hidden="true" />
+      ) : (
+        <Sun className="h-5 w-5" aria-hidden="true" />
+      )}
+    </button>
   );
 };
 
